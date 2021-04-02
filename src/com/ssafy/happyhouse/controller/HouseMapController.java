@@ -245,6 +245,7 @@ public class HouseMapController extends HttpServlet {
 		MemberDto memberDto = (MemberDto) session.getAttribute("userinfo");
 		ArticleDto aritcleDto = new ArticleDto();
 		aritcleDto.setUserid(memberDto.getUserid());
+		aritcleDto.setUserid("ssafy");
 		aritcleDto.setSubject(request.getParameter("subject"));
 		aritcleDto.setContent(request.getParameter("content"));
 
