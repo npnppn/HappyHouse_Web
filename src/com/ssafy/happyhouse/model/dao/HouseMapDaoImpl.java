@@ -123,7 +123,7 @@ public class HouseMapDaoImpl implements HouseMapDao {
 		try {
 			conn = DBUtil.getConnection();
 			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT no,dong,AptName,code,jibun FROM houseinfo WHERE dong = ? \n");
+			sql.append("SELECT no,dong,AptName,code,jibun,lat,lng FROM houseinfo WHERE dong = ? \n");
 			sql.append("ORDER BY AptName");
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setString(1, dong);
@@ -135,6 +135,8 @@ public class HouseMapDaoImpl implements HouseMapDao {
 				dto.setAptName(rs.getString("AptName"));
 				dto.setCode(rs.getString("code"));
 				dto.setJibun(rs.getString("jibun"));
+				dto.setLat(rs.getString("lat"));
+				dto.setLng(rs.getString("lng"));
 				list.add(dto);
 			}
 		} catch (SQLException e) {

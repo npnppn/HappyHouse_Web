@@ -131,6 +131,8 @@ public class HouseMapController extends HttpServlet {
 					obj.put("aptName", dto.getAptName());
 					obj.put("code", dto.getCode());
 					obj.put("jibun", dto.getJibun());
+					obj.put("lat", dto.getLat());
+					obj.put("lng", dto.getLng());
 					arr.add(obj);
 				}
 			} catch (Exception e) {

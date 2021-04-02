@@ -55,6 +55,7 @@
 			<div class="card col-sm-12 mt-1" style="min-height: 850px;">
 				<div class="card-body">
 				<script>
+				var markers = []
 				let colorArr = ['table-primary','table-success','table-danger'];
 				$(document).ready(function(){
 					$.get("${pageContext.request.contextPath}/map"
@@ -99,6 +100,7 @@
 								,{act:"apt", dong:$("#dong").val()}
 								,function(data, status){
 									$("#searchResult").empty();
+									$("tbody").empty();
 									$.each(data, function(index, vo) {
 										let str = "<tr class="+colorArr[index%3]+">"
 										+ "<td>" + vo.no + "</td>"
@@ -106,7 +108,7 @@
 										+ "<td>" + vo.aptName + "</td>"
 										+ "<td>" + vo.jibun + "</td>"
 										+ "<td>" + vo.code
-										+ "</td><td id='lat_"+index+"'></td><td id='lng_"+index+"'></td></tr>";
+										+ "</td><td id='lat_"+index+"'>"+vo.lat+"</td><td id='lng_"+index+"'>"+vo.lng+"</td></tr>";
 										$("tbody").append(str);
 										$("#searchResult").append(vo.dong+" "+vo.aptName+" "+vo.jibun+"<br>");
 									});//each
@@ -117,25 +119,41 @@
 					});//change
 				});//ready
 				function geocode(jsonData) {
+					deleteMarkers();
+					
 					let idx = 0;
+					let multi = {lat: Number(jsonData[0]["lat"]), lng: Number(jsonData[0]["lng"])};
+					map = new google.maps.Map(document.getElementById('map'), {
+						center:multi,zoom: 14
+					});
+					console.log(jsonData[0])
 					$.each(jsonData, function(index, vo) {
 						let tmpLat;
 						let tmpLng;
 						$.get("https://maps.googleapis.com/maps/api/geocode/json"
-								,{	key:'Google API Key'
+								,{	key:'AIzaSyDFTi3EVs4csWeDSzY0MmeFooTaTFUnPeE'
 									, address:vo.dong+"+"+vo.aptName+"+"+vo.jibun
 								}
 								, function(data, status) {
 									//alert(data.results[0].geometry.location.lat);
-									tmpLat = data.results[0].geometry.location.lat;
-									tmpLng = data.results[0].geometry.location.lng;
-									$("#lat_"+index).text(tmpLat);
-									$("#lng_"+index).text(tmpLng);
-									addMarker(tmpLat, tmpLng, vo.aptName);
+									
+									addMarker(vo.lat, vo.lng, vo.aptName);
 								}
 								, "json"
 						);//get
 					});//each
+				}
+				function setMapOnAll(map){
+					for(var i = 0;i< markers.length;i++){
+						markers[i].setMap();
+					}
+				}
+				function clearMarkers(){
+					setMapOnAll(null);
+				}
+				function deleteMarkers(){
+					clearMarkers();
+					markers=[];
 				}
 				</script>
 				시도 : <select id="sido">
@@ -165,7 +183,7 @@
 
 				<div id="map" style="width: 100%; height: 500px; margin: auto;"></div>
 				<script src="https://unpkg.com/@google/markerclustererplus@4.0.1/dist/markerclustererplus.min.js"></script>
-				<script defer src="https://maps.googleapis.com/maps/api/js?key=Google API Key&callback=initMap"></script>
+				<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFTi3EVs4csWeDSzY0MmeFooTaTFUnPeE&callback=initMap"></script>
 				<script>
 					var multi = {lat: 37.5665734, lng: 126.978179};
 					var map;
@@ -174,6 +192,7 @@
 							center: multi, zoom: 12
 						});
 						var marker = new google.maps.Marker({position: multi, map: map});
+						markers.push(marker);
 					}
 					function addMarker(tmpLat, tmpLng, aptName) {
 						var marker = new google.maps.Marker({
@@ -187,10 +206,18 @@
 							callHouseDealInfo();
 						});
 						marker.setMap(map);
+						markers.push(marker);
 					}
-					function callHouseDealInfo() {
-						alert("you can call HouseDealInfo");
+					function callHouseDealInfo(apt) {
+						/*$.get("${pageContext.request.contextPath}/map"
+								,{act:"deal", apt}
+								,function(data, status){
+									alert("***** "+apt+ "정보 *****\n")
+								}//function
+								, "json"
+						);//get */
 					}
+
 				</script>
 				</div>
 			</div>
