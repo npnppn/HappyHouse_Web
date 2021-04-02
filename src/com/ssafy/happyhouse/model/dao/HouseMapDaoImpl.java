@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ssafy.happyhouse.model.HouseDealDto;
 import com.ssafy.happyhouse.model.HouseInfoDto;
 import com.ssafy.happyhouse.model.SidoGugunCodeDto;
 import com.ssafy.util.DBUtil;
@@ -123,7 +124,7 @@ public class HouseMapDaoImpl implements HouseMapDao {
 		try {
 			conn = DBUtil.getConnection();
 			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT no,dong,AptName,code,jibun FROM houseinfo WHERE dong = ? \n");
+			sql.append("SELECT no,dong,AptName,code,jibun,lat,lng FROM houseinfo WHERE dong = ? \n");
 			sql.append("ORDER BY AptName");
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setString(1, dong);
@@ -135,6 +136,8 @@ public class HouseMapDaoImpl implements HouseMapDao {
 				dto.setAptName(rs.getString("AptName"));
 				dto.setCode(rs.getString("code"));
 				dto.setJibun(rs.getString("jibun"));
+				dto.setLat(rs.getString("lat"));
+				dto.setLng(rs.getString("lng"));
 				list.add(dto);
 			}
 		} catch (SQLException e) {
@@ -146,5 +149,34 @@ public class HouseMapDaoImpl implements HouseMapDao {
 		}
 		return list;
 	}
-
+	public HouseDealDto getAptInfo(String AptName) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		HouseDealDto dto = new HouseDealDto();
+		try {
+			conn = DBUtil.getConnection();
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT dong,AptName,dealAmount,buildYear,area,type FROM housedeal WHERE AptName = ? \n");
+			sql.append("ORDER BY AptName");
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setString(1, AptName);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				dto.setDong(rs.getString("dong"));
+				dto.setAptName(rs.getString("AptName"));
+				dto.setDealAmount(rs.getString("dealAmount"));
+				dto.setBuildYear(rs.getString("buildYear"));
+				dto.setArea(rs.getString("area"));
+				dto.setType(rs.getString("type"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+			DBUtil.close(conn);
+		}
+		return dto;
+	}
 }

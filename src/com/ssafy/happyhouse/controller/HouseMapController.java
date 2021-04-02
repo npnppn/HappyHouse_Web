@@ -16,6 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.ssafy.happyhouse.model.ArticleDto;
+import com.ssafy.happyhouse.model.HouseDealDto;
 import com.ssafy.happyhouse.model.HouseInfoDto;
 import com.ssafy.happyhouse.model.MemberDto;
 import com.ssafy.happyhouse.model.SidoGugunCodeDto;
@@ -162,6 +163,8 @@ public class HouseMapController extends HttpServlet {
 					obj.put("aptName", dto.getAptName());
 					obj.put("code", dto.getCode());
 					obj.put("jibun", dto.getJibun());
+					obj.put("lat", dto.getLat());
+					obj.put("lng", dto.getLng());
 					arr.add(obj);
 				}
 			} catch (Exception e) {
@@ -175,7 +178,42 @@ public class HouseMapController extends HttpServlet {
 				out.close();
 			}
 		}//dong
-
+		else if("deal".equals(act)) {
+			String aptName = request.getParameter("apt");
+			PrintWriter out = response.getWriter();
+			JSONObject obj = new JSONObject();
+			try {
+				HouseDealDto dto = HouseMapServiceImpl.getHouseMapService().getAptInfo(aptName);
+				obj.put("dong", dto.getDong());
+				obj.put("aptName", dto.getAptName());
+				obj.put("area", dto.getArea());
+				obj.put("dealAmount", dto.getDealAmount());
+				obj.put("buildYear", dto.getBuildYear());
+				obj.put("type", dto.getType());
+			} catch (Exception e) {
+				obj = new JSONObject();
+				obj.put("message_code", "-1");
+				e.printStackTrace();
+			} finally {
+				out.print(obj.toJSONString());
+				out.close();
+			}
+		}
+		else if("mvwrite".equals(act)) {
+			response.sendRedirect(root + "/article/write.jsp");
+		} else if("write".equals(act)) {
+			writeArticle(request, response);
+		} else if("list".equals(act)) {
+			listArticle(request, response);
+		} else if("mvarticle".equals(act)) {
+			moveModifyArticle(request, response);
+		} else if("mvmodify".equals(act)) {
+			moveModifyArticle(request, response);
+		} else if("modify".equals(act)) {
+			modifyArticle(request, response);
+		} else if("delete".equals(act)) {
+			deleteArticle(request, response);
+		}
 		else {
 			response.sendRedirect(root);
 		}

@@ -2,6 +2,7 @@ package com.ssafy.happyhouse.model.service;
 
 import java.util.List;
 
+import com.ssafy.happyhouse.model.HouseDealDto;
 import com.ssafy.happyhouse.model.HouseInfoDto;
 import com.ssafy.happyhouse.model.SidoGugunCodeDto;
 import com.ssafy.happyhouse.model.dao.HouseMapDaoImpl;
@@ -36,6 +37,9 @@ public class HouseMapServiceImpl implements HouseMapService {
 	@Override
 	public List<HouseInfoDto> getAptInDong(String dong) throws Exception {
 		return HouseMapDaoImpl.getHouseMapDao().getAptInDong(dong);
+	}
+	public HouseDealDto getAptInfo(String aptName)throws Exception {
+		return HouseMapDaoImpl.getHouseMapDao().getAptInfo(aptName);
 	}
 
 }
