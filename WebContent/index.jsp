@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="root" value="${pageContext.request.contextPath}"/>
 <!--  123, 166 Google API Key 입력후 테스트 -->
 <!DOCTYPE html>
 <html>
@@ -38,7 +40,7 @@
 					</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">Notice</a>
+					<a class="nav-link" href="${root}/map?act=list&key=&word=">Notice</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#">News</a>
