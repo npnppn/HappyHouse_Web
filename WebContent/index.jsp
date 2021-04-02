@@ -48,6 +48,20 @@
 				<li class="nav-item">
 					<a class="nav-link" href="#">Contact</a>
 				</li>
+                <c:if test="${userinfo == null}">
+                <li class="nav-item">
+                    <a class="nav-link" href="${root}/user/join.jsp">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${root}/user/login.jsp">Login</a>
+                </li>
+                </c:if>
+                <c:if test="${userinfo != null}">
+                  <li>
+                      <a class="nav-link" href="${root}/map?act=logout">로그아웃</a>
+                  </li>
+                </c:if>
+        
 			</ul>
 		</nav>
 
