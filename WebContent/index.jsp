@@ -203,19 +203,20 @@
 						marker.addListener('click', function() {
 							map.setZoom(17);
 							map.setCenter(marker.getPosition());
-							callHouseDealInfo();
+							callHouseDealInfo(aptName);
 						});
 						marker.setMap(map);
 						markers.push(marker);
 					}
-					function callHouseDealInfo(apt) {
-						/*$.get("${pageContext.request.contextPath}/map"
-								,{act:"deal", apt}
+					function callHouseDealInfo(aptName) {
+						$.get("${pageContext.request.contextPath}/map"
+								,{act:"deal", apt:aptName}
 								,function(data, status){
-									alert("***** "+apt+ "정보 *****\n")
+									console.log(data);
+									alert("***** "+aptName+ "정보 *****\n\n주소 : "+data['dong']+"\n종류 : "+data["type"]+"\n평수 : "+data["area"]+"m^2\n매매가 : "+data["dealAmount"]+",000원");
 								}//function
 								, "json"
-						);//get */
+						);//get 
 					}
 
 				</script>
