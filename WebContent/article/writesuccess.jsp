@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="root" value="${pageContext.request.contextPath}"/>
 <c:if test="${userinfo == null}">
-	<c:redirect url="/main.do"/>
+	<c:redirect url="/map"/>
 </c:if>
 <c:if test="${userinfo != null}">
 <!DOCTYPE html>
@@ -21,13 +21,13 @@
 <div class="container" align="center">
 	<div class="col-lg-6" align="right">
 	<strong>${userinfo.username}</strong>님 환영합니다.
-	<a href="${root}/main.do?act=logout">로그아웃</a>
+	<a href="${root}/map?act=logout">로그아웃</a>
 	</div>
 	<div class="col-lg-6">
 	  <div class="jumbotron">
 	    <h1>글작성 성공!!!</h1>      
 	  </div>  
-	  <p><a href="${root}/main.do?act=list&key=&word=">글목록</a></p>
+	  <p><a href="${root}/map?act=list&key=&word=">글목록</a></p>
 	</div>
 </div>
 </body>
