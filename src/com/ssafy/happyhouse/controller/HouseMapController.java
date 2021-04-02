@@ -381,5 +381,4 @@ public class HouseMapController extends HttpServlet {
 		request.getRequestDispatcher(path).forward(request, response);
 	}
 
->>>>>>> src/com/ssafy/happyhouse/controller/HouseMapController.java
 }
