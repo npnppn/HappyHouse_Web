@@ -2,10 +2,10 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="root" value="${pageContext.request.contextPath}"/>
-<%-- <c:if test="${userinfo == null}">
-	<c:redirect url="/main.do"/>
+<c:if test="${userinfo == null}">
+	<c:redirect url="/map"/>
 </c:if>
-<c:if test="${userinfo != null}"> --%>
+<c:if test="${userinfo != null}">
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,7 +40,7 @@
 		<nav class="navbar navbar-expand-sm bg-dark navbar-dark rounded">
 			<ul class="navbar-nav">
 				<li class="nav-item">
-					<a class="nav-link" href="#">Home</a>
+					<a class="nav-link" href="${root}/map">Home</a>
 				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -113,8 +113,12 @@
 							<td>${article.regtime}</td>
 							<c:if test="${userinfo.userid == article.userid}">
 	        					<td>
-								<a href="${root}/main.do?act=mvmodify&articleno=${article.articleno}">수정</a>
-								<a href="${root}/main.do?act=delete&articleno=${article.articleno}">삭제</a>
+								<a href="${root}/map?act=mvmodify&articleno=${article.articleno}">수정  &nbsp; &nbsp;</a>
+								<a href="${root}/map?act=delete&articleno=${article.articleno}">삭제</a>
+								</td>
+	      					</c:if>
+							<c:if test="${userinfo.userid != article.userid}">
+	        					<td>
 								</td>
 	      					</c:if>
 						</tr>
@@ -138,4 +142,4 @@
 </body>
 </html>
 
-<%-- </c:if> --%>
+</c:if>
