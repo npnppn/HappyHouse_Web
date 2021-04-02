@@ -1,6 +1,7 @@
 package com.ssafy.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,26 +10,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ssafy.model.ArticleDto;
+import com.ssafy.model.MemberDto;
+import com.ssafy.model.service.ArticleService;
+import com.ssafy.model.service.ArticleServiceImpl;
 
 @WebServlet("/main.do")
 public class MainController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	// private LoginService loginService;
 	// private GuestBookService guestBookService;
+	private ArticleService articleService;
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
 		// loginService = new LoginServiceImpl();
 		// guestBookService = new GuestBookServiceImpl();
+		articleService = new ArticleServiceImpl();
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		process(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8");
 		process(request, response);
 	}
@@ -72,28 +81,152 @@ public class MainController extends HttpServlet {
 		/*
 		공지사항 영역
 		*/
-		
+		else if("mvwrite".equals(act)) {
+			response.sendRedirect(root + "/article/write.jsp");
+		} else if("write".equals(act)) {
+			writeArticle(request, response);
+		} else if("list".equals(act)) {
+			listArticle(request, response);
+		} else if("mvarticle".equals(act)) {
+			moveModifyArticle(request, response);
+		} else if("mvmodify".equals(act)) {
+			moveModifyArticle(request, response);
+		} else if("modify".equals(act)) {
+			modifyArticle(request, response);
+		} else if("delete".equals(act)) {
+			deleteArticle(request, response);
+		}
 		else {
 			response.sendRedirect(root);
 		}
 	}
-	
-	/* 
-	실거래가 영역
-	*/
-	
-	/*
-	회원관리 영역
-	*/
 
 	/*
-	관심지역 영역
-	*/
-	
-	/*
-	공지사항 영역
-	*/
+	 * 실거래가 영역
+	 */
 
+	/*
+	 * 회원관리 영역
+	 */
+
+	/*
+	 * 관심지역 영역
+	 */
+
+	/*
+	 * 공지사항 영역
+	 */
+
+	private void deleteArticle(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String path = "/index.jsp";
+		int articleno = Integer.parseInt(request.getParameter("articleno"));
+
+		try {
+			articleService.deleteArticle(articleno);
+			path = "/main.do?act=list&key=&word=";
+			response.sendRedirect(request.getContextPath() + path);
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("msg", "글삭제 처리 중 문제가 발생했습니다.");
+			path = "/error/error.jsp";
+			request.getRequestDispatcher(path).forward(request, response);
+		}
+	}
+
+	private void modifyArticle(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String path = "/index.jsp";
+		ArticleDto articleDto = new ArticleDto();
+		articleDto.setArticleno(Integer.parseInt(request.getParameter("articleno")));
+		articleDto.setSubject(request.getParameter("subject"));
+		articleDto.setContent(request.getParameter("content"));
+
+		try {
+			articleService.modifyArticle(articleDto);
+			path = "/main.do?act=list&key=&word=";
+			response.sendRedirect(request.getContextPath() + path);
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("msg", "글작성중 문제가 발생했습니다.");
+			path = "/error/error.jsp";
+			request.getRequestDispatcher(path).forward(request, response);
+		}
+	}
+
+	private void moveModifyArticle(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String path = "/index.jsp";
+		int articleno = Integer.parseInt(request.getParameter("articleno"));
+		System.out.println(articleno);
+		try {
+			ArticleDto articleDto = articleService.getArticle(articleno);
+			request.setAttribute("article", articleDto);
+			path = "/article/modify.jsp";
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("msg", "글수정 처리 중 문제가 발생했습니다.");
+			path = "/error/error.jsp";
+		}
+		request.getRequestDispatcher(path).forward(request, response);
+		System.out.println(path);
+	}
+
+	private void listArticle(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String path = "/index.jsp";
+		String key = request.getParameter("key");
+		String word = request.getParameter("word");
+		try {
+			List<ArticleDto> list = articleService.listArticle(key, word);
+			request.setAttribute("articles", list);
+			path = "/article/list.jsp";
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("msg", "글목록을 얻어오는 중 문제가 발생했습니다.");
+			path = "/error/error.jsp";
+		}
+		request.getRequestDispatcher(path).forward(request, response);
+	}
+
+	private void writeArticle(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String path = "/index.jsp";
+		HttpSession session = request.getSession();
+		MemberDto memberDto = (MemberDto) session.getAttribute("userinfo");
+		ArticleDto aritcleDto = new ArticleDto();
+		aritcleDto.setUserid(memberDto.getUserid());
+		aritcleDto.setSubject(request.getParameter("subject"));
+		aritcleDto.setContent(request.getParameter("content"));
+
+		try {
+			articleService.writeArticle(aritcleDto);
+			path = "/article/writesuccess.jsp";
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("msg", "글작성중 문제가 발생했습니다.");
+			path = "/error/error.jsp";
+		}
+		/*if (memberDto != null) {
+			ArticleDto guestBookDto = new ArticleDto();
+			guestBookDto.setUserid(memberDto.getUserid());
+			guestBookDto.setSubject(request.getParameter("subject"));
+			guestBookDto.setContent(request.getParameter("content"));
+
+			try {
+				articleService.writeArticle(guestBookDto);
+				path = "/article/writesuccess.jsp";
+			} catch (Exception e) {
+				e.printStackTrace();
+				request.setAttribute("msg", "글작성중 문제가 발생했습니다.");
+				path = "/error/error.jsp";
+			}
+		} else {
+			request.setAttribute("msg", "로그인 후 사용 가능한 페이지입니다.");
+			path = "/error/error.jsp";
+		}*/
+		request.getRequestDispatcher(path).forward(request, response);
+	}
 
 	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
@@ -104,46 +237,26 @@ public class MainController extends HttpServlet {
 
 	private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		/*
-		String path = "/index.jsp";
-		String userid = request.getParameter("userid");
-		String userpwd = request.getParameter("userpwd");
-		
-		try {
-			MemberDto memberDto = loginService.login(userid, userpwd);
-			if(memberDto != null) {
-//				session 설정
-				HttpSession session = request.getSession();
-				session.setAttribute("userinfo", memberDto);
-				
-//				cookie 설정
-				String idsave = request.getParameter("idsave");
-				if("saveok".equals(idsave)) {//아이디 저장을 체크 했다면.
-					Cookie cookie = new Cookie("ssafy_id", userid);
-					cookie.setPath(request.getContextPath());
-					cookie.setMaxAge(60 * 60 * 24 * 365 * 40);//40년간 저장.
-					response.addCookie(cookie);
-				} else {//아이디 저장을 해제 했다면.
-					Cookie cookies[] = request.getCookies();
-					if(cookies != null) {
-						for(Cookie cookie : cookies) {
-							if("ssafy_id".equals(cookie.getName())) {
-								cookie.setMaxAge(0);
-								response.addCookie(cookie);
-								break;
-							}
-						}
-					}
-				}
-			} else {
-				request.setAttribute("msg", "아이디 또는 비밀번호 확인 후 로그인해 주세요.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			request.setAttribute("msg", "로그인 중 문제가 발생했습니다.");
-			path = "/error/error.jsp";
-		}
-		request.getRequestDispatcher(path).forward(request, response);
-		*/
+		 * String path = "/index.jsp"; String userid = request.getParameter("userid");
+		 * String userpwd = request.getParameter("userpwd");
+		 * 
+		 * try { MemberDto memberDto = loginService.login(userid, userpwd); if(memberDto
+		 * != null) { // session 설정 HttpSession session = request.getSession();
+		 * session.setAttribute("userinfo", memberDto);
+		 * 
+		 * // cookie 설정 String idsave = request.getParameter("idsave");
+		 * if("saveok".equals(idsave)) {//아이디 저장을 체크 했다면. Cookie cookie = new
+		 * Cookie("ssafy_id", userid); cookie.setPath(request.getContextPath());
+		 * cookie.setMaxAge(60 * 60 * 24 * 365 * 40);//40년간 저장.
+		 * response.addCookie(cookie); } else {//아이디 저장을 해제 했다면. Cookie cookies[] =
+		 * request.getCookies(); if(cookies != null) { for(Cookie cookie : cookies) {
+		 * if("ssafy_id".equals(cookie.getName())) { cookie.setMaxAge(0);
+		 * response.addCookie(cookie); break; } } } } } else {
+		 * request.setAttribute("msg", "아이디 또는 비밀번호 확인 후 로그인해 주세요."); } } catch
+		 * (Exception e) { e.printStackTrace(); request.setAttribute("msg",
+		 * "로그인 중 문제가 발생했습니다."); path = "/error/error.jsp"; }
+		 * request.getRequestDispatcher(path).forward(request, response);
+		 */
 	}
-	
+
 }
