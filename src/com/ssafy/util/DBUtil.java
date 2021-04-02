@@ -23,12 +23,15 @@ public class DBUtil {
 		return DriverManager.getConnection(URL, ID, PASSWORD);
 	}
 
-	public static void close(AutoCloseable obj) {
-			try {
-				if(obj != null)
-					obj.close();
-			} catch (Exception e) {
-				e.printStackTrace();
+	public static void close(AutoCloseable... closeables) {
+		for(AutoCloseable c : closeables) {
+			if (c != null) {
+				try {
+					c.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+		}
 	}
 }
