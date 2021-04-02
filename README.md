@@ -60,3 +60,9 @@
 - JSP의 EL/JSTL, Session 활용
 
 - /Webcontent/article/ 에 있는 jsp 파일들을 이용해 공지사항 서비스의 View를 제공한다.
+
+
+
+참고자료
+
+http://happyhouse.jaen.kr/
