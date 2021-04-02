@@ -57,11 +57,44 @@ public class MainController extends HttpServlet {
 		}
 		*/
 		
+		/* 
+		실거래가 영역
+		*/
+		
+		/*
+		회원관리 영역
+		*/
+		
+		/*
+		관심지역 영역
+		*/
+		
+		/*
+		공지사항 영역
+		*/
+		
 		else {
 			response.sendRedirect(root);
 		}
 	}
 	
+	/* 
+	실거래가 영역
+	*/
+	
+	/*
+	회원관리 영역
+	*/
+
+	/*
+	관심지역 영역
+	*/
+	
+	/*
+	공지사항 영역
+	*/
+
+
 	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
 		session.removeAttribute("userinfo");
