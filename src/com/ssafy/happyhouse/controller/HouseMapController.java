@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,16 +23,20 @@ import com.ssafy.happyhouse.model.SidoGugunCodeDto;
 import com.ssafy.happyhouse.model.service.ArticleService;
 import com.ssafy.happyhouse.model.service.ArticleServiceImpl;
 import com.ssafy.happyhouse.model.service.HouseMapServiceImpl;
+import com.ssafy.happyhouse.model.service.LoginService;
+import com.ssafy.happyhouse.model.service.LoginServiceImpl;
 
 @WebServlet("/map")
 public class HouseMapController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private LoginService loginService;
 	private ArticleService articleService;
 	
 	@Override
 	public void init() throws ServletException {
 		super.init();
+		loginService = new LoginServiceImpl();
 		articleService = new ArticleServiceImpl();
 	}
 	
@@ -47,7 +52,33 @@ public class HouseMapController extends HttpServlet {
 		String root = request.getContextPath();
 		response.setCharacterEncoding("UTF-8");
 		String act = request.getParameter("act");
-		if("sido".equals(act)) {
+		
+		if("mvlogin".equals(act)) {
+			response.sendRedirect(root + "/user/login.jsp");
+		} else if("mvjoin".equals(act)) {
+			response.sendRedirect(root + "/user/join.jsp");
+		} else if("login".equals(act)) {
+			login(request, response);
+		} else if("logout".equals(act)) {
+			logout(request, response);
+		} else if("mvwrite".equals(act)) {
+			response.sendRedirect(root + "/article/write.jsp");
+		} else if("write".equals(act)) {
+			writeArticle(request, response);
+		} else if("list".equals(act)) {
+			listArticle(request, response);
+		} else if("mvarticle".equals(act)) {
+			moveModifyArticle(request, response);
+		} else if("mvmodify".equals(act)) {
+			moveModifyArticle(request, response);
+		} else if("modify".equals(act)) {
+			modifyArticle(request, response);
+		} else if("delete".equals(act)) {
+			deleteArticle(request, response);
+		}
+		
+		// si gun gu
+		else if("sido".equals(act)) {
 			PrintWriter out = response.getWriter();
 			List<SidoGugunCodeDto> list = null;
 			JSONArray arr = new JSONArray();
@@ -188,6 +219,56 @@ public class HouseMapController extends HttpServlet {
 		}
 	}//process
 	
+	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HttpSession session = request.getSession();
+		session.removeAttribute("userinfo");
+//		session.invalidate();
+		response.sendRedirect(request.getContextPath());
+	}
+
+	private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String path = "/index.jsp";
+		String userid = request.getParameter("userid");
+		String userpwd = request.getParameter("userpwd");
+		try {
+			MemberDto memberDto = loginService.login(userid, userpwd);
+			if(memberDto != null) {
+//				session 설정
+				HttpSession session = request.getSession();
+				session.setAttribute("userinfo", memberDto);
+				
+//				cookie 설정
+				String idsave = request.getParameter("idsave");
+				if("saveok".equals(idsave)) {//아이디 저장을 체크 했다면.
+					Cookie cookie = new Cookie("ssafy_id", userid);
+					cookie.setPath(request.getContextPath());
+					cookie.setMaxAge(60 * 60 * 24 * 365 * 40);//40년간 저장.
+					response.addCookie(cookie);
+				} else {//아이디 저장을 해제 했다면.
+					Cookie cookies[] = request.getCookies();
+					if(cookies != null) {
+						for(Cookie cookie : cookies) {
+							if("ssafy_id".equals(cookie.getName())) {
+								cookie.setMaxAge(0);
+								response.addCookie(cookie);
+								break;
+							}
+						}
+					}
+				}
+			} else {
+				path = "/user/login.jsp";
+				request.setAttribute("msg", "아이디 또는 비밀번호 확인 후 로그인해 주세요.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("msg", "로그인 중 문제가 발생했습니다.");
+			path = "/error/error.jsp";
+		}
+		request.getRequestDispatcher(path).forward(request, response);
+	}
+	
+
 	
 	private void deleteArticle(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

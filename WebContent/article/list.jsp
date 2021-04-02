@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="root" value="${pageContext.request.contextPath}"/>
 <%-- <c:if test="${userinfo == null}">
-	<c:redirect url="/main.do"/>
+	<c:redirect url="/map"/>
 </c:if>
 <c:if test="${userinfo != null}"> --%>
 <!DOCTYPE html>
@@ -113,8 +113,8 @@
 							<td>${article.regtime}</td>
 							<c:if test="${userinfo.userid == article.userid}">
 	        					<td>
-								<a href="${root}/main.do?act=mvmodify&articleno=${article.articleno}">수정</a>
-								<a href="${root}/main.do?act=delete&articleno=${article.articleno}">삭제</a>
+								<a href="${root}/map?act=mvmodify&articleno=${article.articleno}">수정</a>
+								<a href="${root}/map?act=delete&articleno=${article.articleno}">삭제</a>
 								</td>
 	      					</c:if>
 						</tr>
